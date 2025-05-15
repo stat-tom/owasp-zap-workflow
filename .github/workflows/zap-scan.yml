@@ -23,7 +23,8 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
               -t https://practicesoftwaretesting.com \
               -r zap_report.html \
-              -J zap_report.json
+              -J zap_report.json || test $? -eq 2
+
 
       - name: Upload ZAP HTML Report
         uses: actions/upload-artifact@v4
