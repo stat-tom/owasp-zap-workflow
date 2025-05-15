@@ -1,0 +1,40 @@
+name: OWASP ZAP Security Scan
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Start target app (example)
+        run: |
+          docker run -d -p 8080:80 --name mywebapp nginx:alpine
+          sleep 10 
+
+      - name: Run OWASP ZAP Baseline Scan
+        run: |
+          docker run --network host \
+            -v $(pwd):/zap/wrk/:rw \
+            owasp/zap2docker-stable zap-baseline.py \
+              -t http://localhost:8080 \
+              -r zap_report.html \
+              -J zap_report.json
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZAP-HTML-Report
+          path: zap_report.html
+
+      - name: Upload JSON report
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZAP-JSON-Report
+          path: zap_report.json
