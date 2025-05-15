@@ -1,18 +1,20 @@
 name: OWASP ZAP Scan
 
 on:
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout (not strictly needed for external target)
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create report directory
-        run: mkdir -p zap-reports
+      - name: Create a writable report directory
+        run: |
+          mkdir -p zap-reports
+          chmod -R 777 zap-reports  # Make sure Docker container can write here
 
       - name: Run OWASP ZAP Baseline Scan
         run: |
@@ -21,17 +23,15 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
               -t https://practicesoftwaretesting.com \
               -r zap_report.html \
-              -J zap_report.json \
-              -n zap-context.context \
-              -d
+              -J zap_report.json
 
-      - name: Upload ZAP Report (HTML)
+      - name: Upload ZAP HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report-html
           path: zap-reports/zap_report.html
 
-      - name: Upload ZAP Report (JSON)
+      - name: Upload ZAP JSON Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report-json
