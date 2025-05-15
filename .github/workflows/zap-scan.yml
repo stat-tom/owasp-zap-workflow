@@ -28,13 +28,13 @@ jobs:
               -J zap_report.json
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ZAP-HTML-Report
           path: zap_report.html
 
       - name: Upload JSON report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ZAP-JSON-Report
           path: zap_report.json
